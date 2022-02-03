@@ -1,12 +1,15 @@
 import { ValidatorOptions } from 'class-validator';
 import { ClassConstructor } from 'class-transformer';
-import { APIGatewayProxyResult, APIGatewayEventRequestContext } from 'aws-lambda';
+import {
+    APIGatewayProxyResult,
+    APIGatewayEventRequestContext,
+} from 'aws-lambda';
 import winston from 'winston';
 import { HttpError } from './http-error';
 
 // TODO: Add required option
 export interface ValidateOptions<T> {
-    classType: ClassConstructor<T>
+    classType: ClassConstructor<T>;
     options?: ValidatorOptions;
     description?: string;
 }
@@ -15,13 +18,19 @@ export interface ValidateResponseOption<T> extends ValidateOptions<T> {
     statusCode: number;
 }
 
-export interface HandlerOptions<TBody, TQueryParams, TPathParameters, THeaders, TResponse> {
+export interface HandlerOptions<
+    TBody,
+    TQueryParams,
+    TPathParameters,
+    THeaders,
+    TResponse
+> {
     body?: ValidateOptions<TBody>;
     queryParameters?: ValidateOptions<TQueryParams>;
     pathParameters?: ValidateOptions<TPathParameters>;
     headers?: ValidateOptions<THeaders>;
     response?: ValidateResponseOption<TResponse>;
-    errorResponses?: Array<ValidateResponseOption<unknown>>;
+    errorResponses?: ValidateResponseOption<unknown>[];
 
     /**
      * Optional error transformer to customize the error response
@@ -34,12 +43,14 @@ export interface HandlerOptions<TBody, TQueryParams, TPathParameters, THeaders, 
     logger?: winston.Logger;
 
     /*
-    * On error, allows stacktrace to be shown. By default it is false;
-    */
+   * On error, allows stacktrace to be shown. By default it is false;
+   */
     showStackTrace?: boolean;
 }
 
-export interface Dictionary { [name: string]: string; }
+export interface Dictionary {
+    [name: string]: string;
+}
 
 export interface ProxyEvent<TBody, TQueryParams, TPathParameters, THeaders> {
     body: TBody;
@@ -55,7 +66,7 @@ export interface IOk<T> {
     success: true;
     statusCode: number;
     body?: T;
-    headers?: { [header: string]: boolean | number | string; };
+    headers?: { [header: string]: boolean | number | string };
 }
 
 export interface IErrorDetail {
