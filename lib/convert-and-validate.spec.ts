@@ -1,4 +1,4 @@
-import { BAD_REQUEST } from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 import { IsString, IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import 'reflect-metadata';
@@ -56,7 +56,7 @@ describe('convert-and-validate', () => {
         }, 'ERROR_MESSAGE');
 
         return expect(fn)
-            .rejects.toEqual(new HttpError(BAD_REQUEST, 'ERROR_MESSAGE'));
+            .rejects.toEqual(new HttpError(StatusCodes.BAD_REQUEST, 'ERROR_MESSAGE'));
     });
 
     it('should throw an error when child validation fails', async () => {
@@ -65,7 +65,7 @@ describe('convert-and-validate', () => {
         }, 'ERROR_MESSAGE');
 
         return expect(fn)
-            .rejects.toEqual(new HttpError(BAD_REQUEST, 'ERROR_MESSAGE'));
+            .rejects.toEqual(new HttpError(StatusCodes.BAD_REQUEST, 'ERROR_MESSAGE'));
     });
 
     it('should throw an error when validation fails with details', async () => {
@@ -89,9 +89,11 @@ describe('convert-and-validate', () => {
         try {
             await fn;
         } catch (err) {
-            expect(err.statusCode).toEqual(BAD_REQUEST);
-            expect(err.message).toEqual('ERROR_MESSAGE');
-            expect(err.details).toEqual(messages);
+            const error = err as HttpError;
+
+            expect(error.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+            expect(error.message).toEqual('ERROR_MESSAGE');
+            expect(error.details).toEqual(messages);
         }
     });
 });

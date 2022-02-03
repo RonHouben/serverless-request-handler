@@ -1,4 +1,4 @@
-import { BAD_REQUEST } from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 import { HttpError } from './http-error';
 import winston from 'winston';
 
@@ -11,6 +11,6 @@ export function convertToJson(value?: string | null, logger?: winston.Logger): a
             logger.error(error);
         }
 
-        throw new HttpError(BAD_REQUEST, 'Invalid json');
+        throw new HttpError(StatusCodes.BAD_REQUEST, 'Invalid json');
     }
 }

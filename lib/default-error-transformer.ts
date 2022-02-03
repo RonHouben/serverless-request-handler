@@ -1,4 +1,4 @@
-import { getStatusText } from 'http-status-codes';
+import { getReasonPhrase } from 'http-status-codes';
 import { APIGatewayProxyResult } from 'aws-lambda';
 import { HttpError } from './http-error';
 
@@ -14,7 +14,7 @@ export function defaultErrorTransformer(error: HttpError,
         statusCode: error.statusCode,
         body: JSON.stringify({
             status: error.statusCode,
-            name: getStatusText(error.statusCode),
+            name: getReasonPhrase(error.statusCode),
             message: error.message,
             details: [
                 ...error.details,

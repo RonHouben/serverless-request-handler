@@ -1,7 +1,7 @@
 import { ValidateOptions, IErrorDetail } from './models';
-import { plainToClass } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { validate, ValidatorOptions, ValidationError } from 'class-validator';
-import { BAD_REQUEST } from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 import { HttpError } from './http-error';
 
 const defaultValidatorOptions: ValidatorOptions = { forbidNonWhitelisted: true, whitelist: true };
@@ -20,12 +20,12 @@ function extractErrorMessages(errors: ValidationError[], parentProperty?: string
 }
 
 export async function convertAndValidate<T>(plain: any, options: ValidateOptions<T>, errorMessage: string): Promise<T> {
-    const value = plainToClass(options.classType, plain);
+    const value = plainToInstance<any, any>(options.classType, plain);
     const errors = await validate(value, options.options || defaultValidatorOptions);
 
     if (errors.length > 0) {
-        throw new HttpError(BAD_REQUEST, errorMessage, ...extractErrorMessages(errors));
+        throw new HttpError(StatusCodes.BAD_REQUEST, errorMessage, ...extractErrorMessages(errors));
     }
 
-    return value;
+    return value as unknown as T;
 }

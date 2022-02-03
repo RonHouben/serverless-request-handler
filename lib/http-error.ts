@@ -14,3 +14,8 @@ export class HttpError extends Error implements IHttpError {
         this.details = details;
     }
 }
+
+export function isHttpError(error: HttpError | Error): error is HttpError {
+    return (<HttpError>error).statusCode !== undefined;
+ }
+ 

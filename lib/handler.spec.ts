@@ -3,7 +3,7 @@ import { APIGatewayProxyEvent, APIGatewayEventRequestContext, Context, APIGatewa
 import { Result } from './result';
 import { IsString, IsNumber } from 'class-validator';
 import { handler } from './handler';
-import { OK } from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 
 const BASE_EVENT: APIGatewayProxyEvent = {
     body: null,
@@ -66,7 +66,7 @@ describe('handler', () => {
             const handle = handler(options, async (event: any) => {
                 expect(event[property]).toEqual(new DummyStringClass('STRING'));
                 expect(event[property] instanceof DummyStringClass).toBeTruthy();
-                return Result.Ok(OK);
+                return Result.Ok(StatusCodes.OK);
             });
 
             const result = await callHandler(handle, {
@@ -77,7 +77,7 @@ describe('handler', () => {
             });
 
             expect(result).toEqual({
-                statusCode: OK,
+                statusCode: StatusCodes.OK,
                 body: ''
             });
         }
@@ -100,7 +100,7 @@ describe('handler', () => {
             };
 
             const handle = handler(options, async () => {
-                return Result.Ok(OK);
+                return Result.Ok(StatusCodes.OK);
             });
 
             const result = await callHandler(handle, {
@@ -143,7 +143,7 @@ describe('handler', () => {
         const result = await callHandler(handle) as APIGatewayProxyResult;
         expect(result.statusCode).toEqual(500);
         const resultBodyObject = JSON.parse(result.body);
-        expect(resultBodyObject.name).toBe('Server Error');
+        expect(resultBodyObject.name).toBe('Internal Server Error');
         expect(resultBodyObject.message).toBe(errorMessage);
         expect(resultBodyObject.status).toBe(500);
         expect(resultBodyObject.details.length).toBe(1);
@@ -162,7 +162,7 @@ describe('handler', () => {
         };
 
         const handle = handler(options, async () => {
-            return Result.Ok(OK, { shouldBeString: 'STRING', nonExit: 'DOES_NOT_EXIST' });
+            return Result.Ok(StatusCodes.OK, { shouldBeString: 'STRING', nonExit: 'DOES_NOT_EXIST' });
         });
 
         const result = await callHandler(handle) as APIGatewayProxyResult;
@@ -183,7 +183,7 @@ describe('handler', () => {
         };
 
         const handle = handler(options, async () => {
-            return Result.Ok(OK, { shouldBeString: 123 } as unknown as DummyStringClass);
+            return Result.Ok(StatusCodes.OK, { shouldBeString: 123 } as unknown as DummyStringClass);
         });
 
         const result = await callHandler(handle) as APIGatewayProxyResult;

@@ -1,12 +1,12 @@
 import { ValidatorOptions } from 'class-validator';
-import { ClassType } from 'class-transformer/ClassTransformer';
+import { ClassConstructor } from 'class-transformer';
 import { APIGatewayProxyResult, APIGatewayEventRequestContext } from 'aws-lambda';
 import winston from 'winston';
 import { HttpError } from './http-error';
 
 // TODO: Add required option
 export interface ValidateOptions<T> {
-    classType: ClassType<T>;
+    classType: ClassConstructor<T>
     options?: ValidatorOptions;
     description?: string;
 }

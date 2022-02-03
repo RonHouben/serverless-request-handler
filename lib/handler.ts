@@ -1,11 +1,12 @@
 import { defaultLogger } from './console-logger';
-import { HandlerOptions, ProxyEvent, ResultResponse, Dictionary, IErrorDetail } from './models';
+import { HandlerOptions, ProxyEvent, ResultResponse, Dictionary } from './models';
 import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { convertAndValidate } from './convert-and-validate';
-import { INTERNAL_SERVER_ERROR } from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 import { convertToJson } from './convert-to-json';
 import { defaultErrorTransformer } from './default-error-transformer';
 import { HttpError } from './http-error';
+import { isHttpError } from '.';
 
 const ERROR_MESSAGES = {
     INVALID_BODY: 'Invalid body',
@@ -86,9 +87,10 @@ export function handler<
                 }
 
                 return errorTransformer(result, options);
-            } catch (error) {
+            } catch (err) {
+                const error = err as Error | HttpError
 
-                if (error instanceof HttpError) {
+                if (isHttpError(error)) {
                     return errorTransformer(error, options);
                 }
 
@@ -96,8 +98,8 @@ export function handler<
                 logger.error(error);
 
                 return errorTransformer(new HttpError(
-                    INTERNAL_SERVER_ERROR,
-                    error.message
+                    StatusCodes.INTERNAL_SERVER_ERROR,
+                    (error as Error).message
                 ), options);
             }
         };
